@@ -149,6 +149,40 @@ double Window::max_abs_function() const
     return max_abs;
 }
 
+double Window::max_hermite_error() const
+{
+    double max_err = 0.0;
+
+    for (int i = 0; i < SAMPLES; i++) {
+        double x = a + (b - a) * i / (SAMPLES - 1.0);
+        double err = fabs(hermite_compute(x, a, b, n,
+                                          x_nodes, hermite_coef) -
+                          function_value(x));
+
+        if (err > max_err)
+            max_err = err;
+    }
+
+    return max_err;
+}
+
+double Window::max_spline_error() const
+{
+    double max_err = 0.0;
+
+    for (int i = 0; i < SAMPLES; i++) {
+        double x = a + (b - a) * i / (SAMPLES - 1.0);
+        double err = fabs(spline_compute(x, a, b, n,
+                                         x_nodes, spline_coef) -
+                          function_value(x));
+
+        if (err > max_err)
+            max_err = err;
+    }
+
+    return max_err;
+}
+
 const char *Window::function_name() const
 {
     switch (k) {
@@ -305,6 +339,15 @@ void Window::draw_info(QPainter &painter, double max_abs) const
 
     painter.drawText(10, 80, QString("max |F| = %1").arg(max_abs));
 
+    if (mode == 3) {
+        painter.drawText(10, 100,
+                         QString("max |H-f| = %1")
+                             .arg(max_hermite_error()));
+
+        painter.drawText(10, 120,
+                         QString("max |S-f| = %1")
+                             .arg(max_spline_error()));
+    }
 }
 
 void Window::paintEvent(QPaintEvent * /* event */)
