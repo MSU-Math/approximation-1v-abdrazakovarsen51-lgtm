@@ -413,10 +413,10 @@ void Window::paintEvent(QPaintEvent * /* event */)
     ymin -= delta;
     ymax += delta;
 
-    double max_abs = fabs(ymin);
+    double max_abs = max_abs_function();//fabs(ymin);
 
-    if (fabs(ymax) > max_abs)
-        max_abs = fabs(ymax);
+   // if (fabs(ymax) > max_abs)
+     //   max_abs = fabs(ymax);
 
     printf("max |F| = %.16e\n", max_abs);
 
