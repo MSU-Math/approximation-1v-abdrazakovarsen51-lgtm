@@ -1,6 +1,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <QKeyEvent>
+#include <QPainter>
 #include <QWidget>
 
 class Window : public QWidget
@@ -29,6 +31,8 @@ class Window : public QWidget
     double function_value(double x) const;
     double derivative_value(double x) const;
     double max_abs_function() const;
+    double max_hermite_error() const;
+    double max_spline_error() const;
 
     double current_left() const;
     double current_right() const;
