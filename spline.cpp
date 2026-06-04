@@ -1,4 +1,6 @@
 #include "spline.h"
+#include <stddef.h>
+
 
 static int find_segment(double x, int n, const double *x_nodes)
 {
@@ -25,7 +27,7 @@ static int find_segment(double x, int n, const double *x_nodes)
 
 int spline_init(int n, const double *x, const double *f, double *coef)
 {
-    if (n < 4 || x == nullptr || f == nullptr || coef == nullptr)
+    if (n < 4 || x == NULL || f == NULL || coef == NULL)
         return -1;
 
     for (int i = 1; i < n; i++) {
@@ -116,14 +118,11 @@ int spline_init(int n, const double *x, const double *f, double *coef)
 double spline_compute(double x, double a, double b, int n,
                       const double *x_nodes, const double *coef)
 {
-    if (n < 2 || x_nodes == nullptr || coef == nullptr)
+    (void)a;
+    (void)b;
+
+    if (n < 2 || x_nodes == NULL || coef == NULL)
         return 0.0;
-
-    if (x < a)
-        x = a;
-
-    if (x > b)
-        x = b;
 
     int i = find_segment(x, n, x_nodes);
     double t = x - x_nodes[i];
