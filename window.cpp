@@ -134,12 +134,30 @@ double Window::derivative_value(double x) const
     return 0.0;
 }
 
+double Window::current_left() const
+{
+    double center = 0.5 * (a + b);
+    double half = 0.5 * (b - a) / pow(2.0, scale_power);
+
+    return center - half;
+}
+
+double Window::current_right() const
+{
+    double center = 0.5 * (a + b);
+    double half = 0.5 * (b - a) / pow(2.0, scale_power);
+
+    return center + half;
+}
+
 double Window::max_abs_function() const
 {
     double max_abs = 0.0;
+    double left = current_left();
+    double right = current_right();
 
     for (int i = 0; i < SAMPLES; i++) {
-        double x = a + (b - a) * i / (SAMPLES - 1.0);
+        double x = left + (right - left) * i / (SAMPLES - 1.0);
         double y = fabs(function_value(x));
 
         if (y > max_abs)
@@ -152,11 +170,13 @@ double Window::max_abs_function() const
 double Window::max_hermite_error() const
 {
     double max_err = 0.0;
+    double left = current_left();
+    double right = current_right();
 
     for (int i = 0; i < SAMPLES; i++) {
-        double x = a + (b - a) * i / (SAMPLES - 1.0);
-        double err = fabs(hermite_compute(x, a, b, n,
-                                          x_nodes, hermite_coef) -
+        double x = left + (right - left) * i / (SAMPLES - 1.0);
+        double err = fabs(hermite_compute(x, a, b, n, x_nodes,
+                                          hermite_coef) -
                           function_value(x));
 
         if (err > max_err)
@@ -169,11 +189,13 @@ double Window::max_hermite_error() const
 double Window::max_spline_error() const
 {
     double max_err = 0.0;
+    double left = current_left();
+    double right = current_right();
 
     for (int i = 0; i < SAMPLES; i++) {
-        double x = a + (b - a) * i / (SAMPLES - 1.0);
-        double err = fabs(spline_compute(x, a, b, n,
-                                         x_nodes, spline_coef) -
+        double x = left + (right - left) * i / (SAMPLES - 1.0);
+        double err = fabs(spline_compute(x, a, b, n, x_nodes,
+                                         spline_coef) -
                           function_value(x));
 
         if (err > max_err)
@@ -261,22 +283,6 @@ int Window::rebuild()
     update();
 
     return 0;
-}
-
-double Window::current_left() const
-{
-    double center = 0.5 * (a + b);
-    double half = 0.5 * (b - a) / pow(2.0, scale_power);
-
-    return center - half;
-}
-
-double Window::current_right() const
-{
-    double center = 0.5 * (a + b);
-    double half = 0.5 * (b - a) / pow(2.0, scale_power);
-
-    return center + half;
 }
 
 double Window::graph_value(double x, int graph_id) const
@@ -413,10 +419,7 @@ void Window::paintEvent(QPaintEvent * /* event */)
     ymin -= delta;
     ymax += delta;
 
-    double max_abs = max_abs_function();//fabs(ymin);
-
-   // if (fabs(ymax) > max_abs)
-     //   max_abs = fabs(ymax);
+    double max_abs = max_abs_function();
 
     printf("max |F| = %.16e\n", max_abs);
 
